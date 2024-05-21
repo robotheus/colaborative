@@ -12,4 +12,7 @@ Plataforma de mapeamento colaborativo em construção.
 ## Duvidas
 
 Quais categorias?
+
 Quais os tipos de marcações? (Desenho, ponto)
+
+Editar ou apagar pontos?
