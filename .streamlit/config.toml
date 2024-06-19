@@ -1,2 +1,7 @@
 [client]
 showSidebarNavigation = false
+toolbarMode = "minimal"
+
+[browser]
+serverPort = 8501
+serverAddress = "localhost"

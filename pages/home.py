@@ -1,51 +1,47 @@
+import mapa as mp
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
-import controllers.coordsController as coordsController
+import controllers.userController as userController
+import os 
 
-def create_map():
-    m = folium.Map(location=map_center, zoom_start=16.5, width="100%", height=800)
-    if st.session_state.clicked_coords:
-        folium.Marker(location=st.session_state.clicked_coords, popup="teste").add_to(m)
-    return m
+from streamlit_cookies_manager import EncryptedCookieManager
 
-st.set_page_config(page_title="Mapa Interativo", layout="wide")
+mp.config_page("Mapa")
 
-cat = ["cat1", "cat2", "cat3", "cat4", "cat5", "cat6", "cat7"]
-selected_cat = st.sidebar.radio("Selecione uma categoria:", cat)
+cookies = EncryptedCookieManager(
+    password=os.environ.get("COOKIES_PASSWORD", "mapacpf123") 
+)
 
-map_center = [-21.1258328, -44.2633711]
+if not cookies.ready():
+    st.stop()
 
-if 'clicked_coords' not in st.session_state:
-    st.session_state.clicked_coords = None
+def init_home():
 
-m = create_map()
-clicked_location = st_folium(m, width="100%", height=800)
+    selected_cat = mp.categories()
+    mp.init_map_interactive(-21.125877931976074,-44.26214575767518, selected_cat)
 
-savebtn = st.sidebar.button("Salvar coordenadas")
-
-if clicked_location and clicked_location['last_clicked']:
-    aux = clicked_location['last_clicked']
-    lat = aux['lat']
-    lng = aux['lng']
-
-    st.session_state.clicked_coords = [lat, lng]
-
-    m = create_map()
-    st_folium(m, width="100%", height=800)
-
-    st.success(f'Coordenadas {lat} e {lng} selecionadas')
-
-if savebtn and st.session_state.clicked_coords:
-    lat, lng = st.session_state.clicked_coords
+def remove_cookie():
+    cookies.__delitem__('cpf')
+    cookies.save()
+        
+if 'cpf' in st.session_state:
+    userdata = userController.read(st.session_state['cpf'])
     
-    coordsController.create(selected_cat, lat, lng)
+    cookies['cpf'] = str(userdata['cpf'])
+    cookies.save()
+else:
+    cpf = cookies.get('cpf')
+    print(cpf)
     
-    st.success("Coordenadas salvas no banco.")
-    
-    st.session_state.clicked_coords = None
-    
-    # aqui em vez de criar o mapa vazio novamente vamos tentar criar o mapa com a nova marcação salva
-    # para isso vai ser preciso criar um read para o coordController
-    m = create_map()
-    st_folium(m, width="100%", height=800)
+    if cpf:
+        userdata = userController.read(str(cpf))
+    else:
+        st.switch_page("pages/login.py")
+
+st.sidebar.title("Olá, " + str(userdata['nome']))
+
+selec_cat = mp.categories()
+mp.init_map_interactive(-21.125877931976074,-44.26214575767518, selec_cat)
+
+st.sidebar.button("Sair", on_click=remove_cookie)
+
+

@@ -12,5 +12,4 @@ def create(usuario : user):
     db.user_collection.insert_one(format_user)
 
 def read(cpf : str):
-   
     return db.user_collection.find_one({"cpf": cpf})

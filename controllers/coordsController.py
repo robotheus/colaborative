@@ -9,3 +9,6 @@ def create(cat, lat, lng):
     }
 
     db.coord_collection.insert_one(format_coord)
+
+def read():
+    return list(db.coord_collection.find())

@@ -3,11 +3,12 @@ import controllers.userController as userController
 import models.user as user
 from pymongo.errors import DuplicateKeyError
 import bcrypt
+import mapa as mapa
+
+mapa.config_page("Cadastro")
 
 def cadastro():
     
-    st.sidebar.title("Cadastro")
-
     name          = st.sidebar.text_input(label = "Nome")
     cpf           = st.sidebar.text_input(label = "CPF")
     password      = st.sidebar.text_input(label = "Senha", type = "password")
@@ -31,4 +32,7 @@ def cadastro():
 
 st.sidebar.page_link("pages/cadastro.py", label="Cadastro")
 st.sidebar.page_link("pages/login.py", label="Entrar")
+
+mapa.init_map_visualization(-21.125877931976074,-44.26214575767518)
+
 cadastro()
